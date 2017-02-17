@@ -1,9 +1,9 @@
 (ns machine-learning.linear-regression
   (:require [incanter.charts :as charts]
             [clojure.data.csv :as csv]
-            [clojure.java.io :as io])
-  (:use [incanter.core :only [view]]
-        [clojure.core.matrix :only [matrix mmul transpose sub]]))
+            [clojure.java.io :as io]
+            [clojure.core.matrix :as matrix])
+  (:use [incanter.core :only [view]]))
 
 (def alpha 0.01)
 (def iterations 1500)
@@ -19,13 +19,13 @@
 (def number-of-examples (count xs))
 
 (def X (-> [(repeat number-of-examples 1) xs]
-           (matrix)
+           (matrix/matrix)
            (transpose)))
 
 (def initial-theta [0 0])
 
 (defn hypothesis[X theta]
-  (mmul X theta))
+  (matrix/mmul X theta))
 
 (defn mean-square-error [guess actual]
   (-> (matrix/sub guess actual)
@@ -52,7 +52,7 @@
       (recur (dec remaining-iterations)
              (matrix/sub theta (cost-derivative X y theta))))))
 
-(def result (gradient-descent X y theta alpha 1500))
+(def result (gradient-descent X y initial-theta alpha 1500))
 
 (defn plot-data[x y]
   (let [plot (charts/scatter-plot x y
